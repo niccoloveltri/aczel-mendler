@@ -3,9 +3,8 @@
 open import Utilities
 
 -- Assume given a set-valued functor F
--- (preservation of identity is not needed though?)
 
-module Coalgebras (SF : SemiFunctor) where
+module Coalgebras (Fun : Functor) where
 
 open import Cubical.Foundations.Everything
 open import Cubical.Data.Sigma
@@ -14,7 +13,7 @@ open import Cubical.HITs.SetQuotients
 open import Cubical.HITs.PropositionalTruncation renaming (rec to recP) hiding (map)
 open import Cubical.Relation.Binary.Base
 open BinaryRelation
-open SemiFunctor SF
+open Functor Fun
 
 -- ==============================================
 
@@ -26,8 +25,11 @@ Coalg ℓ = Σ[ A ∈ Type ℓ ] (A → F A)
 coalg : ∀{ℓ} (C : Coalg ℓ) → ⟨ C ⟩ → F ⟨ C ⟩
 coalg = snd
 
+isCoalgHom : ∀{ℓ ℓ'} (C : Coalg ℓ) (C' : Coalg ℓ') (f : ⟨ C ⟩ → ⟨ C' ⟩) → Type (ℓ-max ℓ ℓ')
+isCoalgHom C C' f = map f ∘ coalg C ≡ coalg C' ∘ f
+
 CoalgHom : ∀{ℓ ℓ'} (C : Coalg ℓ) (C' : Coalg ℓ') → Type (ℓ-max ℓ ℓ')
-CoalgHom (A , a) (A' , a') = Σ[ f ∈ (A → A') ] map f ∘ a ≡ a' ∘ f
+CoalgHom C C' = Σ[ f ∈ (⟨ C ⟩ → ⟨ C' ⟩) ] isCoalgHom C C' f
 
 CoalgHom∘ : ∀{ℓ ℓ' ℓ''} {C : Coalg ℓ} {C' : Coalg ℓ'} {C'' : Coalg ℓ''}
   → CoalgHom C' C'' → CoalgHom C C' → CoalgHom C C''
@@ -48,6 +50,9 @@ strExt ℓ' C = (C' : Coalg ℓ') → isProp (CoalgHom C' C)
 
 -- A coalgebra is copmlete if any other coalgebra has exactly one
 -- coalgebra morphism into it.
-complete : ∀ {ℓ} ℓ' → (C : Coalg ℓ) → Type (ℓ-max ℓ (ℓ-suc ℓ'))
-complete ℓ' C = (C' : Coalg ℓ') → isContr (CoalgHom C' C)
+isComplete : ∀ {ℓ} ℓ' → (C : Coalg ℓ) → Type (ℓ-max ℓ (ℓ-suc ℓ'))
+isComplete ℓ' C = (C' : Coalg ℓ') → isContr (CoalgHom C' C)
+
+isFinal : ∀ {ℓ} → (C : Coalg ℓ) → Type (ℓ-suc ℓ)
+isFinal {ℓ} C = (C' : Coalg ℓ) → isContr (CoalgHom C' C)
 

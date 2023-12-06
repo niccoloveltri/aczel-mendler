@@ -4,7 +4,7 @@ open import Utilities
 open import Cubical.Foundations.Everything
 import Coalgebras 
 
-module MaxQuot (SF : SemiFunctor) (ℓ : Level) (C : Coalgebras.Coalg SF ℓ) where
+module MaxQuot (Fun : Functor) (ℓ : Level) (C : Coalgebras.Coalg Fun ℓ) where
 
 open import Cubical.Data.Sigma
 open import Cubical.Data.Sum renaming (rec to rec⊎) hiding (map)
@@ -12,9 +12,9 @@ open import Cubical.HITs.SetQuotients
 open import Cubical.HITs.PropositionalTruncation renaming (rec to recP) hiding (map)
 open import Cubical.Relation.Binary.Base
 open BinaryRelation
-open SemiFunctor SF
-open Coalgebras SF
-open import Precongruences SF 
+open Functor Fun
+open Coalgebras Fun
+open import Precongruences Fun 
 
 sExt-MaxQuot' : ∀ {ℓʳ} (x y : ⟨ C ⟩) (S : Precong _ (MaxQuot-Coalg _ C ℓʳ) ℓʳ)
   → isReflRel (S .fst)

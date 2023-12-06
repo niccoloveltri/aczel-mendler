@@ -4,6 +4,7 @@ module Utilities where
 
 open import Cubical.Foundations.Everything
 open import Cubical.HITs.SetQuotients
+open import Cubical.Data.Nat
 
 -- ==============================================
 
@@ -65,11 +66,13 @@ PropRes ℓS ℓL = (P : Type ℓL) → isProp P → Σ[ Q ∈ Type ℓS ] P ≃
 
 -- Functors
 
-record SemiFunctor : Typeω where
+record Functor : Typeω where
   field
     F : ∀ {ℓ} → Type ℓ → Type ℓ
     map : ∀{ℓ ℓ'}{X : Type ℓ}{Y : Type ℓ'} (f : X → Y) → F X → F Y
     map∘ : ∀{ℓ ℓ' ℓ''}{X : Type ℓ}{Y : Type ℓ'}{Z : Type ℓ''}
       → {g : Y → Z} {f : X → Y} (x : F X)
       → map (g ∘ f) x ≡ map g (map f x)
+    mapid : ∀{ℓ}{X : Type ℓ} (x : F X) → map (λ y → y) x ≡ x
     isSetF : ∀{ℓ} {X : Type ℓ} → isSet (F X)
+

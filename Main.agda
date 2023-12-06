@@ -12,4 +12,8 @@ open import Precongruences
 
 open import MaxQuot
 
+open import Complete
+
+open import Multiset
+
 open import Final

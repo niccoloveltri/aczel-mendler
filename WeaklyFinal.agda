@@ -5,7 +5,7 @@ open import Cubical.Foundations.Everything
 
 -- Assume given a set-valued semifunctor F
 
-module WeaklyFinal (SF : SemiFunctor) (ℓ : Level) where
+module WeaklyFinal (Fun : Functor) (ℓ : Level) where
 
 open import Cubical.Data.Sigma
 open import Cubical.Data.Sum renaming (rec to rec⊎) hiding (map)
@@ -13,8 +13,8 @@ open import Cubical.HITs.SetQuotients
 open import Cubical.HITs.PropositionalTruncation renaming (rec to recP) hiding (map)
 open import Cubical.Relation.Binary.Base
 open BinaryRelation
-open SemiFunctor SF
-open import Coalgebras SF
+open Functor Fun
+open import Coalgebras Fun
 
 -- ==============================================
 

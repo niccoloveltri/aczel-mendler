@@ -4,7 +4,7 @@ open import Utilities
 open import Cubical.Foundations.Everything
 import Coalgebras 
 
-module Precongruences (SF : SemiFunctor) (ℓ : Level) (C : Coalgebras.Coalg SF ℓ) where
+module Precongruences (Fun : Functor) (ℓ : Level) (C : Coalgebras.Coalg Fun ℓ) where
 
 open import Cubical.Data.Sigma
 open import Cubical.Data.Sum renaming (rec to rec⊎) hiding (map)
@@ -12,8 +12,8 @@ open import Cubical.HITs.SetQuotients
 open import Cubical.HITs.PropositionalTruncation renaming (rec to recP) hiding (map)
 open import Cubical.Relation.Binary.Base
 open BinaryRelation
-open SemiFunctor SF
-open Coalgebras SF
+open Functor Fun
+open Coalgebras Fun
 
 
 A = ⟨ C ⟩
