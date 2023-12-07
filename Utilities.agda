@@ -2,9 +2,14 @@
 
 module Utilities where
 
-open import Cubical.Foundations.Everything
-open import Cubical.HITs.SetQuotients
-open import Cubical.Data.Nat
+open import Cubical.Foundations.Everything public
+open import Cubical.HITs.SetQuotients public
+open import Cubical.Data.Nat hiding (elim) public
+open import Cubical.Data.Sigma public
+open import Cubical.Data.Sum renaming (rec to rec⊎) hiding (map; elim) public
+open import Cubical.HITs.PropositionalTruncation renaming (rec to recP) hiding (map; elim; rec2) public
+open import Cubical.Relation.Binary.Base public
+open BinaryRelation public
 
 -- ==============================================
 
@@ -66,13 +71,30 @@ PropRes ℓS ℓL = (P : Type ℓL) → isProp P → Σ[ Q ∈ Type ℓS ] P ≃
 
 -- Functors
 
-record Functor : Typeω where
-  field
-    F : ∀ {ℓ} → Type ℓ → Type ℓ
+record Functor ℓs : Typeω where
+  field    
+    F : ∀ {ℓ} → Type ℓ → Type (ℓ-max ℓs ℓ)
     map : ∀{ℓ ℓ'}{X : Type ℓ}{Y : Type ℓ'} (f : X → Y) → F X → F Y
     map∘ : ∀{ℓ ℓ' ℓ''}{X : Type ℓ}{Y : Type ℓ'}{Z : Type ℓ''}
       → {g : Y → Z} {f : X → Y} (x : F X)
       → map (g ∘ f) x ≡ map g (map f x)
     mapid : ∀{ℓ}{X : Type ℓ} (x : F X) → map (λ y → y) x ≡ x
     isSetF : ∀{ℓ} {X : Type ℓ} → isSet (F X)
+
+module _ {ℓs} (Fun : Functor ℓs) where
+
+  open Functor Fun
+  
+  map-lem : ∀ {ℓ ℓ' ℓ''} 
+    → {A : Type ℓ} {X : A → Type ℓ'} {Y : Type ℓ''}
+    → {a : A} {f : X a → Y} {x : F (X a)} 
+    → {a' : A} (eq : a ≡ a')
+    → {f' : X a' → Y} (eqf : ∀ x → f x ≡ f' (transport (cong X eq) x)) 
+    → {x' : F (X a')} (eqx : PathP (λ i → F (X (eq i))) x x') 
+    → map f x ≡ map f' x'
+  map-lem {X = X}{Y} {a = a}{f}{x} =
+    J (λ a' eq → {f' : X a' → Y} (eqf : ∀ x → f x ≡ f' (transport (cong X eq) x)) 
+               → {x' : F (X a')} (eqx : PathP (λ i → F (X (eq i))) x x') 
+               → map f x ≡ map f' x')
+      (λ {f'} eqf → cong₂ map (funExt eqf ∙ funExt (λ z → cong f' (transportRefl z))))
 
