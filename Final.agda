@@ -105,7 +105,8 @@ module FinalitySmall {ℓ} (Fun : Functor ℓ)
                     (PR : PropRes ℓ (ℓ-suc ℓ)) where 
 
   open Coalgebras Fun  
-  open import CompleteSmall ℓ Fun
+  open import Complete
+  open CompleteSmall ℓ Fun
   open CompleteWithPropResizing PR
   open CompleteToFinal Fun SB νF-Coalg complete
 
@@ -117,7 +118,8 @@ module FinalityLarge {ℓ} (Fun : Functor (ℓ-suc ℓ))
                     (PR : PropRes ℓ (ℓ-suc ℓ)) where 
 
   open Coalgebras Fun  
-  open import CompleteLarge ℓ Fun
+  open import Complete
+  open CompleteLarge ℓ Fun
   open CompleteWithPropResizing PR
   open CompleteToFinal Fun SB νF-Coalg complete
 
