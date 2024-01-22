@@ -47,7 +47,7 @@ module CompleteSmall (ℓ : Level) (Fun : Functor ℓ) where
 -- We know that every s-extensional coalgebra is strongly extensional.
 
   sExtL→strExt : sExtL → strExt ℓ νF-Coalg
-  sExtL→strExt = sExt→strExt (ℓ-suc ℓ) νF-Coalg
+  sExtL→strExt = sExt→strExt (ℓ-suc ℓ) νF-Coalg squash/
 
 -- And νF, being the quotient of a coalgebra by the largest preconruence, is s-extensional.
   open import MaxQuotExt Fun _ wνF-Coalg
@@ -143,7 +143,7 @@ module CompleteLarge (ℓ : Level) (Fun : Functor (ℓ-suc ℓ)) where
 -- We know that every s-extensional coalgebra is strongly extensional.
 
   sExtL→strExt : sExtL → strExt ℓ νF-Coalg
-  sExtL→strExt = sExt→strExt (ℓ-suc ℓ) νF-Coalg
+  sExtL→strExt = sExt→strExt (ℓ-suc ℓ) νF-Coalg squash/
 
 -- And νF, being the quotient of a coalgebra by the largest preconruence, is s-extensional.
   open import MaxQuotExt Fun _ wνF-Coalg

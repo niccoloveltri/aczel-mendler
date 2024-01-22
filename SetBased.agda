@@ -23,6 +23,21 @@ isSetBased ℓs ℓl Fun =
   let open Functor Fun in
   {X : Type ℓl} (x : F X) → Σ[ Y ∈ M ℓs X ] Σ[ x₀ ∈ F ⟨ Y ⟩ ] map (ι Y) x₀ ≡ x
 
+module SetBasedDestr {ℓz ℓs ℓl}
+                     (Fun : Functor ℓz)
+                     (SB : isSetBased ℓs ℓl Fun) where
+
+  open Functor Fun
+
+  index : {X : Type ℓl} → F X → M ℓs X
+  index x = SB x .fst
+
+  coll : {X : Type ℓl} (x : F X) → F ⟨ index x ⟩
+  coll x = SB x .snd .fst
+
+  coll-eq : {X : Type ℓl} (x : F X) → map (ι (index x)) (coll x) ≡ x
+  coll-eq x = SB x .snd .snd
+
 -- ==============================================
 
 -- Given a (ℓs,ℓl)-set-based functor F and a ℓl-coalgebra C, then each
@@ -36,15 +51,7 @@ module SubCoalg {ℓz ℓs ℓl}
 
   open Functor Fun
   open Coalgebras Fun
-
-  index : {X : Type ℓl} → F X → M ℓs X
-  index x = SB x .fst
-
-  coll : {X : Type ℓl} (x : F X) → F ⟨ index x ⟩
-  coll x = SB x .snd .fst
-
-  coll-eq : {X : Type ℓl} (x : F X) → map (ι (index x)) (coll x) ≡ x
-  coll-eq x = SB x .snd .snd
+  open SetBasedDestr Fun SB
 
   coalgM : ⟨ C ⟩ → M ℓs ⟨ C ⟩
   coalgM x = index (coalg C x)
@@ -164,3 +171,67 @@ module SubCoalg {ℓz ℓs ℓl}
       coalgHom-h : map h ∘ coalg (C^ Z') ≡ coalg (C^ Y) ∘ h
       coalgHom-h = funExt coalgHom-h'
 
+
+
+
+
+
+isSetBasedRel : ∀ {ℓz} ℓs ℓl (Fun : Functor ℓz)
+  → isSetBased ℓs ℓl Fun
+  → Type (ℓ-max (ℓ-max ℓz (ℓ-suc ℓs)) (ℓ-suc ℓl))
+isSetBasedRel ℓs ℓl Fun SB =
+  let open Functor Fun
+      open SetBasedDestr Fun SB in
+  {X Y : Type ℓl} {R : X → Y → Type ℓl} {x : F X} {y : F Y} (r : relLift' Fun R x y)
+    → Σ[ R₀ ∈ (⟨ index x ⟩ → ⟨ index y ⟩ → Type ℓs) ]
+         Σ[ ι ∈ (∀ a b → R₀ a b → R (ι (index x) a) (ι (index y) b)) ]
+            relLift' Fun R₀ (coll x) (coll y)
+
+-- Assume given (A , ιA) : P X and (B , ιB) : P Y
+-- and (S , ιS) : P (Σ x y. R x y) such that
+-- P fst (S , ιS) ≡ (A , ιA) and P (fst ∘ snd) (S , ιS) ≡ (B , ιB).
+-- This means that there are
+--   eA : A ≃ S such that forall a : A, fst (ιS (eA a)) ≡ ιA a, and
+--   eB : B ≃ S such that forall b : B, fst (snd (ιS (eB b))) ≡ ιB b
+-- Take e : A ≃ B composition of eA and the inverse of eB.
+
+-- Define R₀ : A → B → Type ℓs
+--        R₀ a b = e a ≡ b
+-- or     R₀ a b = eA a ≡ eB b
+
+-- Prove that R₀ a b implies R (ιA a) (ιB b).
+-- Assume eA a ≡ eB b then
+-- snd (snd (ιS (eA a))) : R (fst (ιS (eA a))) (fst (snd (ιS (eA a)))).
+-- But we know
+-- fst (ιS (eA a)) ≡ ιA a and
+-- fst (snd (ιS (eA a))) ≡ fst (snd (ιS (eB b))) ≡ ιB b
+
+-- Prove that relLift' Fun R₀ x₀ y₀,
+-- with x₀ = (A , id) and y₀ = (B , id)
+-- This means find (S' , ιS') : P (Σ a b. R₀ a b) such that
+-- P fst (S' , ιS') ≡ (A , id) and P (fst ∘ snd) (S' , ιS') ≡ (B , id).
+-- Pick S' = S and
+--      ιS' s = (eA-1 s, eB-1 s, p : eA (eA-1 s) ≡ s ≡ eB (eB-1 s))
+
+
+{-
+-- OLD
+
+-- Assume given (A , ιA) : P X and (B , ιB) : P X
+-- such that P [_]R (A , ιA) ≡ P [_]R (B , ιB).
+-- This means that there is e : A ≃ B and forall a : A,
+-- [ ιA a ]R ≡ [ ιB (e a) ]R
+
+-- Define R₀ : A → B → Type ℓs
+--        R₀ a b = e a ≡ b
+
+-- Prove that R₀ a b implies R (ιA a) (ιB b).
+-- If R is effective, then yes, since we know
+-- [ ιA a ]R ≡ [ ιB (e a) ]R ≡ [ ιB b ]R
+
+-- Prove that relLift Fun R₀ x₀ y₀,
+-- with x₀ = (A , id) and y₀ = (B , id)
+-- We have e : A ≃ B, we need to show
+-- [ a ]R₀ = [ e a ]R₀, which is true since
+-- R₀ a (e a).
+-}

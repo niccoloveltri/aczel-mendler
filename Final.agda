@@ -19,6 +19,7 @@ module CompleteToFinal
   {ℓz ℓs ℓl} (Fun : Functor ℓz)
              (SB : isSetBased ℓs ℓl Fun)
              (D : Coalgebras.Coalg Fun ℓl)
+             (setD : isSet ⟨ D ⟩)
              (completeD : Coalgebras.isComplete Fun ℓs D) where 
 
   open Functor Fun
@@ -79,7 +80,7 @@ module CompleteToFinal
 
       isFinal-f : (v : CoalgHom C D) → fCH ≡ v
       isFinal-f v =
-        Σ≡Prop (λ _ → isSetΠ (λ _ → isSetF) _ _)
+        Σ≡Prop (λ _ → isSetΠ (λ _ → isSetF setD) _ _)
                (funExt (λ a → 
                  u (ηM a) (up (ηM a) tt*)
                  ≡⟨ (λ i → isFinal-f' v a i .fst (up (ηM a) tt*)) ⟩
@@ -108,7 +109,7 @@ module FinalitySmall {ℓ} (Fun : Functor ℓ)
   open import Complete
   open CompleteSmall ℓ Fun
   open CompleteWithPropResizing PR
-  open CompleteToFinal Fun SB νF-Coalg complete
+  open CompleteToFinal Fun SB νF-Coalg squash/ complete
 
   final : isFinal νF-Coalg
   final = complete→final
@@ -121,7 +122,7 @@ module FinalityLarge {ℓ} (Fun : Functor (ℓ-suc ℓ))
   open import Complete
   open CompleteLarge ℓ Fun
   open CompleteWithPropResizing PR
-  open CompleteToFinal Fun SB νF-Coalg complete
+  open CompleteToFinal Fun SB νF-Coalg squash/ complete
 
   final : isFinal νF-Coalg
   final = complete→final

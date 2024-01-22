@@ -13,11 +13,8 @@ A = ⟨ C ⟩
 a = coalg C
 
 -- Lifting a relation R on A to another relation FRel R on A
-relLift : ∀{ℓʳ} (R : A → A → Type ℓʳ) → F A → F A → Type (ℓ-max (ℓ-max ℓs ℓ) ℓʳ)
-relLift R x y = map ([_] {R = R}) x ≡ map ([_] {R = R}) y
-
 FRel : ∀{ℓʳ} (R : A → A → Type ℓʳ) → A → A → Type (ℓ-max (ℓ-max ℓs ℓ) ℓʳ)
-FRel R x y = relLift R (a x) (a y)
+FRel R x y = relLift Fun R (a x) (a y)
 
 -- FRel is a monotone operator
 monQuot : ∀{ℓʳ ℓˢ} {R : A → A → Type ℓʳ} {S : A → A → Type ℓˢ}
@@ -49,8 +46,8 @@ isPrecong R = ∀ x y → R x y → FRel R x y
 Precong : ∀ ℓʳ → Type (ℓ-max (ℓ-max ℓs ℓ) (ℓ-suc ℓʳ))
 Precong ℓʳ = Σ[ R ∈ (A → A → Type ℓʳ) ] isPropRel R × isPrecong R
 
-RPrecong : ∀ ℓʳ → Type (ℓ-max (ℓ-max ℓs ℓ) (ℓ-suc ℓʳ))
-RPrecong ℓʳ = Σ[ R ∈ (A → A → Type ℓʳ) ] isPropRel R × isReflRel R × isPrecong R
+--RPrecong : ∀ ℓʳ → Type (ℓ-max (ℓ-max ℓs ℓ) (ℓ-suc ℓʳ))
+--RPrecong ℓʳ = Σ[ R ∈ (A → A → Type ℓʳ) ] isPropRel R × isReflRel R × isPrecong R
 
 -- The maximal precongruence: the union of all precongruences
 wνFRel' : ∀ ℓʳ → A → A → Type (ℓ-max (ℓ-max ℓs ℓ) (ℓ-suc ℓʳ))
@@ -64,7 +61,7 @@ monwνFRel' : ∀ {ℓʳ} x y → wνFRel' ℓʳ x y → FRel (wνFRel ℓʳ) x 
 monwνFRel' x y (S@(R , q , p) , s) = monFRel (λ _ _ r → ∣ S , r ∣₁) _ _ (p x y s)
 
 monwνFRel : ∀ {ℓʳ} x y → wνFRel ℓʳ x y → FRel (wνFRel ℓʳ) x y
-monwνFRel x y = recP (isSetF _ _) (monwνFRel' x y)
+monwνFRel x y = recP (isSetF squash/ _ _) (monwνFRel' x y)
 
 -- Quotienting a coalgebra by its largest precongruence
 MaxQuot : ∀ ℓʳ → Type (ℓ-max (ℓ-max ℓs ℓ) (ℓ-suc ℓʳ))
@@ -72,7 +69,7 @@ MaxQuot ℓʳ = A / wνFRel ℓʳ
 
 -- The quotient is a coalgebra, and the eq. class function [_] is a coalgebra morphism.
 coalg-MaxQuot : ∀{ℓʳ} → MaxQuot ℓʳ → F (MaxQuot ℓʳ)
-coalg-MaxQuot = rec isSetF (map [_] ∘ a) monwνFRel
+coalg-MaxQuot = rec (isSetF squash/) (map [_] ∘ a) monwνFRel
 
 MaxQuot-Coalg : ∀ ℓʳ → Coalg (ℓ-max (ℓ-max ℓs ℓ) (ℓ-suc ℓʳ))
 MaxQuot-Coalg ℓʳ = MaxQuot ℓʳ , coalg-MaxQuot
@@ -91,8 +88,11 @@ coalg-MaxQuot-CoalgHom = [_] , funExt (λ _ → refl)
 sExt : ∀ ℓʳ → Type (ℓ-max (ℓ-max ℓs ℓ) (ℓ-suc ℓʳ))
 sExt ℓʳ = (x y : A) (S : Precong ℓʳ) → isReflRel (S .fst) → S .fst x y → x ≡ y
 
+isSExt-1 : isSet A → (x y : A) → x ≡ y → Σ[ S ∈ Precong ℓ ] isReflRel (S .fst) × S .fst x y
+isSExt-1 setA x y eq = (Path A , setA , λ x' y' eq' i → map [_] (coalg C (eq' i))) , (λ _ → refl) , eq 
+
 -- This notion differs from Aczel and Mendler's one, since they
--- moreover ask the pregrongruence to be transitive and symmetric,
+-- moreover ask the precongruence to be transitive and symmetric,
 -- i.e. a congruence.
 -- But reflexivity is sufficient.
 
@@ -130,7 +130,7 @@ sExt→strExt' {ℓ'} sext C'@(A' , a') (f , fhom) (f' , fhom') z = sext _ _ S r
       ∎
 
     Rp : isPrecong R
-    Rp x₁ x₂ = recP (isSetF _ _) (rec⊎ (Rp' x₁ x₂) (Rp'' x₁ x₂))
+    Rp x₁ x₂ = recP (isSetF squash/ _ _) (rec⊎ (Rp' x₁ x₂) (Rp'' x₁ x₂))
 
     S : Precong (ℓ-max ℓ ℓ')
     S = R , (λ _ _ → isPropPropTrunc) , Rp
@@ -141,7 +141,7 @@ sExt→strExt' {ℓ'} sext C'@(A' , a') (f , fhom) (f' , fhom') z = sext _ _ S r
     s : R (f z) (f' z)
     s = ∣ inl (z , refl , refl) ∣₁
 
-sExt→strExt : ∀{ℓ'} → sExt (ℓ-max ℓ ℓ') → strExt ℓ' C
-sExt→strExt sext C' h k =
-  Σ≡Prop (λ _ → isSetΠ (λ _ → isSetF) _ _)
+sExt→strExt : isSet A → ∀{ℓ'} → sExt (ℓ-max ℓ ℓ') → strExt ℓ' C
+sExt→strExt setA sext C' h k =
+  Σ≡Prop (λ _ → isSetΠ (λ _ → isSetF setA) _ _)
          (funExt (sExt→strExt' sext C' h k))

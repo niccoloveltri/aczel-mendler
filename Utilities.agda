@@ -79,11 +79,18 @@ record Functor ℓs : Typeω where
       → {g : Y → Z} {f : X → Y} (x : F X)
       → map (g ∘ f) x ≡ map g (map f x)
     mapid : ∀{ℓ}{X : Type ℓ} (x : F X) → map (λ y → y) x ≡ x
-    isSetF : ∀{ℓ} {X : Type ℓ} → isSet (F X)
+    isSetF : ∀{ℓ} {X : Type ℓ} → isSet X → isSet (F X)
 
 module _ {ℓs} (Fun : Functor ℓs) where
 
   open Functor Fun
+
+  relLift : ∀{ℓ ℓʳ} {A : Type ℓ} (R : A → A → Type ℓʳ) → F A → F A → Type (ℓ-max (ℓ-max ℓs ℓ) ℓʳ)
+  relLift R x y = map ([_] {R = R}) x ≡ map ([_] {R = R}) y
+
+  relLift' : ∀{ℓ ℓʳ} {A B : Type ℓ} (R : A → B → Type ℓʳ) → F A → F B → Type (ℓ-max (ℓ-max ℓs ℓ) ℓʳ)
+  relLift' {A = A}{B} R x y = Σ[ t ∈ F (Σ[ a ∈ A ] Σ[ b ∈ B ] R a b) ] (map fst t ≡ x) × (map (fst ∘ snd) t ≡ y)
+
   
   map-lem : ∀ {ℓ ℓ' ℓ''} 
     → {A : Type ℓ} {X : A → Type ℓ'} {Y : Type ℓ''}
