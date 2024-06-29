@@ -7,7 +7,7 @@ open import Cubical.HITs.SetQuotients public
 open import Cubical.Data.Nat hiding (elim) public
 open import Cubical.Data.Sigma public
 open import Cubical.Data.Sum renaming (rec to rec⊎) hiding (map; elim) public
-open import Cubical.HITs.PropositionalTruncation renaming (rec to recP) hiding (map; elim; rec2) public
+open import Cubical.HITs.PropositionalTruncation renaming (rec to recP; elim to elimP) hiding (map; rec2) public
 open import Cubical.Relation.Binary.Base public
 open BinaryRelation public
 

@@ -34,3 +34,5 @@ open import SetBased
 -- assuming propositional resizing.
 open import Final
 
+-- The powerset functor and its final coalgebra
+open import Powerset
