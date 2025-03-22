@@ -66,14 +66,16 @@ module IterQuot {ℓ ℓʳ ℓˢ : Level}
 
 
 -- Propositional resizing (Def. 2.4 of de Jong & Escardó "On small types in univalent foundations")
-PropRes : (ℓS ℓL : Level) → Type (ℓ-max (ℓ-suc ℓS) (ℓ-suc ℓL))
-PropRes ℓS ℓL = (P : Type ℓL) → isProp P → Σ[ Q ∈ Type ℓS ] P ≃ Q
+PropRes : (Υ ℓL : Level) → Type (ℓ-max (ℓ-suc Υ) (ℓ-suc ℓL))
+PropRes Υ ℓL = (P : Type ℓL) → isProp P → Σ[ Q ∈ Type Υ ] P ≃ Q
+
+-- Here υ is the level of the universe of small types called  U in the paper
 
 -- Functors
 
-record Functor ℓs : Typeω where
+record Functor υ : Typeω where
   field    
-    F : ∀ {ℓ} → Type ℓ → Type (ℓ-max ℓs ℓ)
+    F : ∀ {ℓ} → Type ℓ → Type (ℓ-max υ ℓ)
     map : ∀{ℓ ℓ'}{X : Type ℓ}{Y : Type ℓ'} (f : X → Y) → F X → F Y
     map∘ : ∀{ℓ ℓ' ℓ''}{X : Type ℓ}{Y : Type ℓ'}{Z : Type ℓ''}
       → {g : Y → Z} {f : X → Y} (x : F X)
@@ -81,12 +83,12 @@ record Functor ℓs : Typeω where
     mapid : ∀{ℓ}{X : Type ℓ} (x : F X) → map (λ y → y) x ≡ x
     isSetF : ∀{ℓ} {X : Type ℓ} → isSet X → isSet (F X)
 
-module _ {ℓs} (Fun : Functor ℓs) where
+module _ {υ} (Fun : Functor υ) where
 
   open Functor Fun
 
   relLift : ∀{ℓ ℓʳ} {A : Type ℓ} (R : A → A → Type ℓʳ)
-    → F A → F A → Type (ℓ-max (ℓ-max ℓs ℓ) ℓʳ)
+    → F A → F A → Type (ℓ-max (ℓ-max υ ℓ) ℓʳ)
   relLift R x y = map ([_] {R = R}) x ≡ map ([_] {R = R}) y
 
   map-lem : ∀ {ℓ ℓ' ℓ''} 

@@ -4,16 +4,16 @@ open import Utilities
 
 -- Assume given a set-valued functor F
 
-module WeaklyComplete {ℓs} (Fun : Functor ℓs) (ℓ : Level) where
+module WeaklyUTerminal {υ} (Fun : Functor υ) (ℓ : Level) where
 
 open Functor Fun
 open import Coalgebras Fun
 
 -- ==============================================
 
--- The *weakly* complete coalgebra: the union of all coalgebras
+-- The *weakly* U-terminal coalgebra: the union of all coalgebras
 
-wνF : Type (ℓ-max ℓs (ℓ-suc ℓ))
+wνF : Type (ℓ-max υ (ℓ-suc ℓ))
 wνF = Σ[ C ∈ Coalg ℓ ] ⟨ C ⟩ 
 
 -- Unfolding is just pairing
@@ -26,7 +26,7 @@ coalg-wνF (C , x) = map (unfold C) (coalg C x)
 unfold-eq : (C : Coalg ℓ) → map (unfold C) ∘ coalg C ≡ coalg-wνF ∘ unfold C
 unfold-eq C = refl
 
-wνF-Coalg : Coalg (ℓ-max ℓs (ℓ-suc ℓ))
+wνF-Coalg : Coalg (ℓ-max υ (ℓ-suc ℓ))
 wνF-Coalg = wνF , coalg-wνF
 
 unfold-CoalgHom : (C : Coalg ℓ) → CoalgHom C wνF-Coalg

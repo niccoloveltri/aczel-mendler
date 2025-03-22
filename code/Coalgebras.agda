@@ -4,7 +4,7 @@ open import Utilities
 
 -- Assume given a set-valued functor F
 
-module Coalgebras {ℓs} (Fun : Functor ℓs) where
+module Coalgebras {υ} (Fun : Functor υ) where
 
 open Functor Fun
 
@@ -12,16 +12,16 @@ open Functor Fun
 
 -- COALGEBRAS AND COALGEBRA MORPHISMS
 
-Coalg : ∀ ℓ → Type (ℓ-max ℓs (ℓ-suc ℓ))
+Coalg : ∀ ℓ → Type (ℓ-max υ (ℓ-suc ℓ))
 Coalg ℓ = Σ[ A ∈ Type ℓ ] (A → F A)
 
 coalg : ∀{ℓ} (C : Coalg ℓ) → ⟨ C ⟩ → F ⟨ C ⟩
 coalg = snd
 
-isCoalgHom : ∀{ℓ ℓ'} (C : Coalg ℓ) (C' : Coalg ℓ') (f : ⟨ C ⟩ → ⟨ C' ⟩) → Type (ℓ-max (ℓ-max ℓs ℓ) ℓ')
+isCoalgHom : ∀{ℓ ℓ'} (C : Coalg ℓ) (C' : Coalg ℓ') (f : ⟨ C ⟩ → ⟨ C' ⟩) → Type (ℓ-max (ℓ-max υ ℓ) ℓ')
 isCoalgHom C C' f = map f ∘ coalg C ≡ coalg C' ∘ f
 
-CoalgHom : ∀{ℓ ℓ'} (C : Coalg ℓ) (C' : Coalg ℓ') → Type (ℓ-max (ℓ-max ℓs ℓ) ℓ')
+CoalgHom : ∀{ℓ ℓ'} (C : Coalg ℓ) (C' : Coalg ℓ') → Type (ℓ-max (ℓ-max υ ℓ) ℓ')
 CoalgHom C C' = Σ[ f ∈ (⟨ C ⟩ → ⟨ C' ⟩) ] isCoalgHom C C' f
 
 CoalgHom∘ : ∀{ℓ ℓ' ℓ''} {C : Coalg ℓ} {C' : Coalg ℓ'} {C'' : Coalg ℓ''}
@@ -36,17 +36,17 @@ CoalgHom∘ {C = A , a} {B , b} {C , c} (f , fhom) (g , ghom) = f ∘ g ,
    c ∘ f ∘ g
    ∎)
 
--- A coalgebra is strongly extensional if any other coalgebra has at
+-- A coalgebra is ℓ'-simple if any other ℓ'-coalgebra has at
 -- most one coalgebra morphism into it.
-strExt : ∀ {ℓ} ℓ' → (C : Coalg ℓ) → Type (ℓ-max (ℓ-max ℓs ℓ) (ℓ-suc ℓ'))
-strExt ℓ' C = (C' : Coalg ℓ') → isProp (CoalgHom C' C)
+is[_]Simple : ∀ {ℓ} ℓ' → (C : Coalg ℓ) → Type (ℓ-max (ℓ-max υ ℓ) (ℓ-suc ℓ'))
+is[ ℓ' ]Simple C = (C' : Coalg ℓ') → isProp (CoalgHom C' C)
 
--- A ℓ-coalgebra is ℓ'-complete if any other ℓ'-coalgebra has exactly one
+-- A ℓ-coalgebra is ℓ'-terminal if any other ℓ'-coalgebra has exactly one
 -- coalgebra morphism into it.
--- A ℓ-coalgebra is final if it is ℓ-complete.
-isComplete : ∀ {ℓ} ℓ' → (C : Coalg ℓ) → Type (ℓ-max (ℓ-max ℓs ℓ) (ℓ-suc ℓ'))
-isComplete ℓ' C = (C' : Coalg ℓ') → isContr (CoalgHom C' C)
+-- A ℓ-coalgebra is terminal if it is ℓ-complete.
+is[_]Terminal : ∀ {ℓ} ℓ' → (C : Coalg ℓ) → Type (ℓ-max (ℓ-max υ ℓ) (ℓ-suc ℓ'))
+is[ ℓ' ]Terminal C = (C' : Coalg ℓ') → isContr (CoalgHom C' C)
 
-isFinal : ∀ {ℓ} → (C : Coalg ℓ) → Type (ℓ-max ℓs (ℓ-suc ℓ))
-isFinal {ℓ} = isComplete ℓ
+isTerminal : ∀ {ℓ} → (C : Coalg ℓ) → Type (ℓ-max υ (ℓ-suc ℓ))
+isTerminal {ℓ} = is[ ℓ ]Terminal 
 

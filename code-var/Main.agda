@@ -3,7 +3,7 @@
 module Main where
 
 -- ==============================================
--- A FINAL COALGEBRA THEOREM IN HOTT 
+-- A DIFFERENT TERMINAL COALGEBRA THEOREM IN HOTT 
 -- ==============================================
 
 -- Some preliminaries
@@ -12,27 +12,27 @@ open import Utilities
 -- Coalgebras
 open import Coalgebras
 
--- Construction of the weakly-complete coalgebra
-open import WeaklyComplete
+-- Construction of the weakly-SetU-terminal coalgebra
+open import WeaklySetUTerminal
 
 -- Precongruences and quotienting by the largest precongruence
 open import Precongruences
 open import MaxQuotExt
 
--- Construction of the complete coalgebra, assuming propositional
+-- Construction of the SetU-terminal coalgebra, assuming propositional
 -- resizing.
-open import Complete
+open import SetUTerminal
 
--- The multiset functor, Gylterud-style
+-- The multiset functor P∞, Gylterud-style
 open import Multiset
 
--- Set-based functors
-open import SetBased
+-- SetU-based functors
+open import SetUBased
 
--- From completeness to finality.
--- In particular, every set-based functor admits a final coalgebra,
+-- From SetU-terminal to Set-terminal
+-- In particular, every SetU-based functor admits a Set-terminal coalgebra,
 -- assuming propositional resizing.
-open import Final
+open import SetTerminal
 
--- The powerset functor and its final coalgebra
+-- The powerset functor and its terminal coalgebra
 open import Powerset

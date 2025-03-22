@@ -3,18 +3,18 @@
 open import Utilities
 import Coalgebras 
 
-module MaxQuotExt {ℓs} (Fun : Functor ℓs) (ℓ : Level) (C : Coalgebras.Coalg Fun ℓ) where
+module MaxQuotExt {υ} (Fun : Functor υ) (ℓ : Level) (C : Coalgebras.Coalg Fun ℓ) where
 
 open Functor Fun
 open Coalgebras Fun
 open import Precongruences Fun 
 
--- The quotient by the largest precongruence is s-extensional
+-- The quotient by the largest precongruence is precongruence simple
 
-sExt-MaxQuot' : ∀ {ℓʳ} (x y : ⟨ C ⟩) (S : Precong _ (MaxQuot-Coalg _ C ℓʳ) ℓʳ)
+isPrecongSimple-MaxQuot' : ∀ {ℓʳ} (x y : ⟨ C ⟩) (S : Precong _ (MaxQuot-Coalg _ C ℓʳ) ℓʳ)
   → isReflRel (S .fst)
   → S .fst [ x ] [ y ] → wνFRel _ C ℓʳ x y
-sExt-MaxQuot' {ℓʳ} x y S@(R , q , p) r s = ∣ S' , s ∣₁
+isPrecongSimple-MaxQuot' {ℓʳ} x y S@(R , q , p) r s = ∣ S' , s ∣₁
   where
     open IterQuot _ (wνFRel _ C ℓʳ) R r
 
@@ -43,9 +43,9 @@ sExt-MaxQuot' {ℓʳ} x y S@(R , q , p) r s = ∣ S' , s ∣₁
     S' : Precong _ C ℓʳ
     S' = R' , (λ _ _ → q _ _) , Rp'
 
-sExt-MaxQuot : ∀ ℓʳ → sExt _ (MaxQuot-Coalg _ C ℓʳ) ℓʳ
-sExt-MaxQuot ℓʳ =
+isPrecongSimple-MaxQuot : ∀ ℓʳ → is[_]PrecongSimple _ (MaxQuot-Coalg _ C ℓʳ) ℓʳ
+isPrecongSimple-MaxQuot ℓʳ =
   elimProp2
     (λ _ _ → isPropΠ3 (λ _ _ _ → squash/ _ _))
-    (λ x y S r s → eq/ _ _ (sExt-MaxQuot' x y S r s))
+    (λ x y S r s → eq/ _ _ (isPrecongSimple-MaxQuot' x y S r s))
 

@@ -4,7 +4,7 @@ open import Utilities
 
 -- Assume given a set-valued functor F
 
-module Coalgebras {ℓs} (Fun : Functor ℓs) where
+module Coalgebras {υ} (Fun : Functor υ) where
 
 open Functor Fun
 
@@ -12,7 +12,7 @@ open Functor Fun
 
 -- COALGEBRAS AND COALGEBRA MORPHISMS
 
-Coalg : ∀ ℓ → Type (ℓ-max ℓs (ℓ-suc ℓ))
+Coalg : ∀ ℓ → Type (ℓ-max υ (ℓ-suc ℓ))
 Coalg ℓ = Σ[ A ∈ Type ℓ ] (A → F A)
 
 coalg : ∀{ℓ} (C : Coalg ℓ) → ⟨ C ⟩ → F ⟨ C ⟩
@@ -20,11 +20,11 @@ coalg = snd
 
 isCoalgHom : ∀{ℓ ℓ'} (C : Coalg ℓ) (C' : Coalg ℓ')
   → isSet ⟨ C' ⟩
-  → (f : ⟨ C ⟩ → ⟨ C' ⟩) → Type (ℓ-max (ℓ-max ℓs ℓ) ℓ')
+  → (f : ⟨ C ⟩ → ⟨ C' ⟩) → Type (ℓ-max (ℓ-max υ ℓ) ℓ')
 isCoalgHom C C' setC' f = map setC' f ∘ coalg C ≡ coalg C' ∘ f
 
 CoalgHom : ∀{ℓ ℓ'} (C : Coalg ℓ) (C' : Coalg ℓ') → isSet ⟨ C' ⟩
-  → Type (ℓ-max (ℓ-max ℓs ℓ) ℓ')
+  → Type (ℓ-max (ℓ-max υ ℓ) ℓ')
 CoalgHom C C' setC' = Σ[ f ∈ (⟨ C ⟩ → ⟨ C' ⟩) ] isCoalgHom C C' setC' f
 
 CoalgHom∘ : ∀{ℓ ℓ' ℓ''} {C : Coalg ℓ} {C' : Coalg ℓ'} {C'' : Coalg ℓ''}
@@ -40,20 +40,20 @@ CoalgHom∘ {C = A , a} {B , b} {C , c} {_}{setC} (f , fhom) (g , ghom) = f ∘ 
    c ∘ f ∘ g
    ∎)
 
--- A coalgebra is strongly extensional if any other coalgebra has at
+-- A coalgebra is ℓ'-simple if any other ℓ'-coalgebra has at
 -- most one coalgebra morphism into it.
-strExt : ∀ {ℓ} ℓ' → (C : Coalg ℓ) → isSet ⟨ C ⟩ → Type (ℓ-max (ℓ-max ℓs ℓ) (ℓ-suc ℓ'))
-strExt ℓ' C setC = (C' : Coalg ℓ') → isProp (CoalgHom C' C setC)
+is[_]Simple : ∀ {ℓ} ℓ' → (C : Coalg ℓ) → isSet ⟨ C ⟩ → Type (ℓ-max (ℓ-max υ ℓ) (ℓ-suc ℓ'))
+is[ ℓ' ]Simple C setC = (C' : Coalg ℓ') → isProp (CoalgHom C' C setC)
 
--- A ℓ-coalgebra is ℓ'-complete if any other ℓ'-coalgebra has exactly one
+-- A ℓ-coalgebra is ℓ'-terminal if any other ℓ'-coalgebra has exactly one
 -- coalgebra morphism into it.
--- A ℓ-coalgebra is final if it is ℓ-complete.
-isComplete : ∀ {ℓ} ℓ' → (C : Coalg ℓ) → isSet ⟨ C ⟩ → Type (ℓ-max (ℓ-max ℓs ℓ) (ℓ-suc ℓ'))
-isComplete ℓ' C setC = (C' : Coalg ℓ') → isContr (CoalgHom C' C setC)
+-- A ℓ-coalgebra is terminal if it is ℓ-terminal.
+is[_]Terminal : ∀ {ℓ} ℓ' → (C : Coalg ℓ) → isSet ⟨ C ⟩ → Type (ℓ-max (ℓ-max υ ℓ) (ℓ-suc ℓ'))
+is[ ℓ' ]Terminal C setC = (C' : Coalg ℓ') → isContr (CoalgHom C' C setC)
 
-isFinal : ∀ {ℓ} → (C : Coalg ℓ) → isSet ⟨ C ⟩ → Type (ℓ-max ℓs (ℓ-suc ℓ))
-isFinal {ℓ} = isComplete ℓ
+isTerminal : ∀ {ℓ} → (C : Coalg ℓ) → isSet ⟨ C ⟩ → Type (ℓ-max υ (ℓ-suc ℓ))
+isTerminal {ℓ} = is[ ℓ ]Terminal
 
-isFinalSet : ∀ {ℓ} → (C : Coalg ℓ) → isSet ⟨ C ⟩ → Type (ℓ-max ℓs (ℓ-suc ℓ))
-isFinalSet {ℓ} C setC = (C' : Coalg ℓ) → isSet ⟨ C' ⟩ → isContr (CoalgHom C' C setC)
+isTerminalSet : ∀ {ℓ} → (C : Coalg ℓ) → isSet ⟨ C ⟩ → Type (ℓ-max υ (ℓ-suc ℓ))
+isTerminalSet {ℓ} C setC = (C' : Coalg ℓ) → isSet ⟨ C' ⟩ → isContr (CoalgHom C' C setC)
 

@@ -6,15 +6,15 @@ module Powerset (ℓs : Level) where
 
 open import Cubical.Functions.Embedding
 
--- The powerset functor
+-- The powerset functor P0
 
-P : ∀{ℓ} → Type ℓ → Type (ℓ-max (ℓ-suc ℓs) ℓ)
-P X = Σ[ U ∈ Type ℓs ] U ↪ X
+P0 : ∀{ℓ} → Type ℓ → Type (ℓ-max (ℓ-suc ℓs) ℓ)
+P0 X = Σ[ U ∈ Type ℓs ] U ↪ X
 
--- P X is always a set
+-- P0 X is always a set
 
-isSetP : ∀{ℓ} {X : Type ℓ} → isSet (P X)
-isSetP {X = X} x@(_ , _ , embf) y@(_ , _ , embg) =
+isSetP0 : ∀{ℓ} {X : Type ℓ} → isSet (P0 X)
+isSetP0 {X = X} x@(_ , _ , embf) y@(_ , _ , embg) =
   isOfHLevelRespectEquiv 1
     (EmbeddingIP x y)
     (isProp× (isPropΠ (λ _ → isPropΠ (λ _ → isEmbedding→hasPropFibers embg _)))
@@ -38,12 +38,12 @@ Inj→isEmbedding setX setY f inj x y =
                     (λ _ → setY _ _ _ _)
                     (λ _ → setX _ _ _ _))
                     
-_∼_ : ∀{ℓ} {X : Type ℓ} → P X → P X → Type (ℓ-max ℓs ℓ)
+_∼_ : ∀{ℓ} {X : Type ℓ} → P0 X → P0 X → Type (ℓ-max ℓs ℓ)
 (U , f , embf) ∼ (V , g , embg) =
   Σ[ e ∈ (U ≃ V) ] f ≡ g ∘ equivFun e
 
-encodeP : ∀{ℓ} {X : Type ℓ} (s t : P X) → s ∼ t → s ≡ t
-encodeP {X = X} s@(U , f , embf) t@(V , g , embg) eq@(e , eqf) =
+encodeP0 : ∀{ℓ} {X : Type ℓ} (s t : P0 X) → s ∼ t → s ≡ t
+encodeP0 {X = X} s@(U , f , embf) t@(V , g , embg) eq@(e , eqf) =
   EquivJ (λ W e → (f : W → X) (embf : isEmbedding f)
             → f ≡ (λ x → g (equivFun e x)) → (W , f , embf) ≡ (V , g , embg))
          (λ f' embf' eqf' →
@@ -116,24 +116,24 @@ module AssumePropRes (propRes : ∀ ℓ → PropRes ℓs ℓ) where
   
 -- Action of powerset on set-valued functions.
 
-  mapP : ∀{ℓ ℓ'} {X : Type ℓ} {Y : Type ℓ'}
+  mapP0 : ∀{ℓ ℓ'} {X : Type ℓ} {Y : Type ℓ'}
     → isSet Y
-    → (X → Y) → P X → P Y
-  mapP setY f (U , ι , embι) =
+    → (X → Y) → P0 X → P0 Y
+  mapP0 setY f (U , ι , embι) =
     Ker (f ∘ ι) (Eq setY) ,
     rec setY (f ∘ ι) (λ _ _ eq → invEq (EqEquiv setY _ _) eq) ,
     Inj→isEmbedding squash/ setY _
                      (elimProp2 (λ _ _ → isPropΠ (λ _ → squash/ _ _))
                                 λ x y eq → eq/ x y (equivFun (EqEquiv setY _ _) eq))
                                 
--- mapP preserves composition.
+-- mapP0 preserves composition.
 
-  mapP∘ : {ℓ ℓ' ℓ'' : Level} {X : Type ℓ} {Y : Type ℓ'} {Z : Type ℓ''}
+  mapP0∘ : {ℓ ℓ' ℓ'' : Level} {X : Type ℓ} {Y : Type ℓ'} {Z : Type ℓ''}
         {setY : isSet Y} {setZ : isSet Z} {g : Y → Z} {f : X → Y}
-        (x : P X) →
-        mapP setZ (g ∘ f) x ≡ mapP setZ g (mapP setY f x)
-  mapP∘ {setY = setY}{setZ}{g}{f} (U , ι , embι) = 
-    encodeP _ _ (isoToEquiv e ,
+        (x : P0 X) →
+        mapP0 setZ (g ∘ f) x ≡ mapP0 setZ g (mapP0 setY f x)
+  mapP0∘ {setY = setY}{setZ}{g}{f} (U , ι , embι) = 
+    encodeP0 _ _ (isoToEquiv e ,
                  funExt (elimProp (λ _ → setZ _ _)
                                   λ _ → refl))
     where
@@ -147,22 +147,22 @@ module AssumePropRes (propRes : ∀ ℓ → PropRes ℓs ℓ) where
       Iso.rightInv e = elimProp (λ _ → squash/ _ _) (elimProp (λ _ → squash/ _ _) λ _ → refl)
       Iso.leftInv e = elimProp (λ _ → squash/ _ _) (λ _ → refl)
 
--- P is a set-valued functor
-  FunP : Functor (ℓ-suc ℓs)
-  FunP = record { F = P ;
-                  map = mapP ;
-                  map∘ = λ {_}{_}{_}{_}{_}{_}{setY}{setZ}{g}{f} → mapP∘ {setY = setY}{setZ}{g}{f} ;
-                  isSetF = isSetP }
+-- P0 is a set-valued functor
+  FunP0 : Functor (ℓ-suc ℓs)
+  FunP0 = record { F = P0 ;
+                  map = mapP0 ;
+                  map∘ = λ {_}{_}{_}{_}{_}{_}{setY}{setZ}{g}{f} → mapP0∘ {setY = setY}{setZ}{g}{f} ;
+                  isSetF = isSetP0 }
   
   
-  open import SetBased
+  open import SetUBased
 
--- P is set-based
-  isSetBasedP : ∀ ℓ → isSetBased ℓs ℓ FunP
-  isSetBasedP ℓ setX s@(U , ι , embι) =
+-- P0 is set-based
+  isSetBasedP0 : ∀ ℓ → isSetBased ℓs ℓ FunP0
+  isSetBasedP0 ℓ setX s@(U , ι , embι) =
     (U , setU , ι) ,
     (U , idfun U , λ _ _ → idIsEquiv _) ,
-    encodeP _ _ (e , funExt (elimProp (λ _ → setX _ _) (λ _ → refl)))
+    encodeP0 _ _ (e , funExt (elimProp (λ _ → setX _ _) (λ _ → refl)))
     where
       setU : isSet U
       setU = Embedding-into-isSet→isSet (ι , embι) setX
@@ -177,14 +177,14 @@ module AssumePropRes (propRes : ∀ ℓ → PropRes ℓs ℓ) where
       e = isoToEquiv (iso f [_] (λ _ → refl) ret)
   
   
-  open import Final
-  open FinalityLarge FunP (isSetBasedP (ℓ-suc ℓs)) (propRes (ℓ-suc ℓs))
-  open import Coalgebras FunP
-  open import Complete
-  open CompleteLarge ℓs FunP
+  open import SetTerminal
+  open SetTerminalLarge FunP0 (isSetBasedP0 (ℓ-suc ℓs)) (propRes (ℓ-suc ℓs))
+  open import Coalgebras FunP0
+  open import SetUTerminal
+  open SetUTerminalLarge ℓs FunP0
 
--- P admits a terminal coalgebra wrt. sets
+-- P0 admits a terminal coalgebra wrt. sets
 
-  finalP : isFinalSet νF-Coalg _
-  finalP = final
+  setterminalP0 : isTerminalSet νF-Coalg _
+  setterminalP0 = setterminal
 

@@ -4,7 +4,7 @@ open import Utilities
 
 -- Assume given a set-valued functor F
 
-module WeaklyComplete {ℓs} (Fun : Functor ℓs) (ℓ : Level) where
+module WeaklySetUTerminal {υ} (Fun : Functor υ) (ℓ : Level) where
 
 open import Cubical.HITs.SetTruncation hiding (map) renaming (rec to recST)
 open Functor Fun
@@ -12,9 +12,9 @@ open import Coalgebras Fun
 
 -- ==============================================
 
--- The *weakly* complete coalgebra: the union of all coalgebras
+-- The *weakly* SetU-terminal coalgebra: the union of all coalgebras
 
-wνF : Type (ℓ-max ℓs (ℓ-suc ℓ))
+wνF : Type (ℓ-max υ (ℓ-suc ℓ))
 wνF = ∥ Σ[ C ∈ Coalg ℓ ] ⟨ C ⟩ ∥₂
 
 -- Unfolding is just pairing
@@ -27,7 +27,7 @@ coalg-wνF = recST (isSetF) λ (C , x) → map squash₂ (unfold C) (coalg C x)
 unfold-eq : (C : Coalg ℓ) → map squash₂ (unfold C) ∘ coalg C ≡ coalg-wνF ∘ unfold C
 unfold-eq C = refl
 
-wνF-Coalg : Coalg (ℓ-max ℓs (ℓ-suc ℓ))
+wνF-Coalg : Coalg (ℓ-max υ (ℓ-suc ℓ))
 wνF-Coalg = wνF , coalg-wνF
 
 unfold-CoalgHom : (C : Coalg ℓ) → CoalgHom C wνF-Coalg _

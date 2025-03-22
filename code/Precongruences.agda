@@ -3,7 +3,7 @@
 open import Utilities
 import Coalgebras 
 
-module Precongruences {ℓs} (Fun : Functor ℓs) (ℓ : Level) (C : Coalgebras.Coalg Fun ℓ) where
+module Precongruences {υ} (Fun : Functor υ) (ℓ : Level) (C : Coalgebras.Coalg Fun ℓ) where
 
 open Functor Fun
 open Coalgebras Fun
@@ -13,7 +13,7 @@ A = ⟨ C ⟩
 a = coalg C
 
 -- Lifting a relation R on A to another relation FRel R on A
-FRel : ∀{ℓʳ} (R : A → A → Type ℓʳ) → A → A → Type (ℓ-max (ℓ-max ℓs ℓ) ℓʳ)
+FRel : ∀{ℓʳ} (R : A → A → Type ℓʳ) → A → A → Type (ℓ-max (ℓ-max υ ℓ) ℓʳ)
 FRel R x y = relLift Fun R (a x) (a y)
 
 -- FRel is a monotone operator
@@ -40,20 +40,20 @@ monFRel {R = R} {S} k x y r =
   ∎  
 
 -- Definition of precongruence (FRel-coalgebra in relations)
-isPrecong : ∀{ℓʳ} (R : A → A → Type ℓʳ) → Type (ℓ-max (ℓ-max ℓs ℓ) ℓʳ)
+isPrecong : ∀{ℓʳ} (R : A → A → Type ℓʳ) → Type (ℓ-max (ℓ-max υ ℓ) ℓʳ)
 isPrecong R = ∀ x y → R x y → FRel R x y
 
-Precong : ∀ ℓʳ → Type (ℓ-max (ℓ-max ℓs ℓ) (ℓ-suc ℓʳ))
+Precong : ∀ ℓʳ → Type (ℓ-max (ℓ-max υ ℓ) (ℓ-suc ℓʳ))
 Precong ℓʳ = Σ[ R ∈ (A → A → Type ℓʳ) ] isPropRel R × isPrecong R
 
---RPrecong : ∀ ℓʳ → Type (ℓ-max (ℓ-max ℓs ℓ) (ℓ-suc ℓʳ))
+--RPrecong : ∀ ℓʳ → Type (ℓ-max (ℓ-max υ ℓ) (ℓ-suc ℓʳ))
 --RPrecong ℓʳ = Σ[ R ∈ (A → A → Type ℓʳ) ] isPropRel R × isReflRel R × isPrecong R
 
 -- The maximal precongruence: the union of all precongruences
-wνFRel' : ∀ ℓʳ → A → A → Type (ℓ-max (ℓ-max ℓs ℓ) (ℓ-suc ℓʳ))
+wνFRel' : ∀ ℓʳ → A → A → Type (ℓ-max (ℓ-max υ ℓ) (ℓ-suc ℓʳ))
 wνFRel' ℓʳ x y = Σ[ S ∈ Precong ℓʳ ] S .fst x y
 
-wνFRel : ∀ ℓʳ → A → A → Type (ℓ-max (ℓ-max ℓs ℓ) (ℓ-suc ℓʳ))
+wνFRel : ∀ ℓʳ → A → A → Type (ℓ-max (ℓ-max υ ℓ) (ℓ-suc ℓʳ))
 wνFRel ℓʳ x y = ∥ wνFRel' ℓʳ x y ∥₁
 
 -- wνFRel is a precongurence
@@ -64,14 +64,14 @@ monwνFRel : ∀ {ℓʳ} x y → wνFRel ℓʳ x y → FRel (wνFRel ℓʳ) x y
 monwνFRel x y = recP (isSetF squash/ _ _) (monwνFRel' x y)
 
 -- Quotienting a coalgebra by its largest precongruence
-MaxQuot : ∀ ℓʳ → Type (ℓ-max (ℓ-max ℓs ℓ) (ℓ-suc ℓʳ))
+MaxQuot : ∀ ℓʳ → Type (ℓ-max (ℓ-max υ ℓ) (ℓ-suc ℓʳ))
 MaxQuot ℓʳ = A / wνFRel ℓʳ
 
 -- The quotient is a coalgebra, and the eq. class function [_] is a coalgebra morphism.
 coalg-MaxQuot : ∀{ℓʳ} → MaxQuot ℓʳ → F (MaxQuot ℓʳ)
 coalg-MaxQuot = rec (isSetF squash/) (map [_] ∘ a) monwνFRel
 
-MaxQuot-Coalg : ∀ ℓʳ → Coalg (ℓ-max (ℓ-max ℓs ℓ) (ℓ-suc ℓʳ))
+MaxQuot-Coalg : ∀ ℓʳ → Coalg (ℓ-max (ℓ-max υ ℓ) (ℓ-suc ℓʳ))
 MaxQuot-Coalg ℓʳ = MaxQuot ℓʳ , coalg-MaxQuot
 
 coalg-MaxQuot-CoalgHom : ∀{ℓʳ} → CoalgHom C (MaxQuot-Coalg ℓʳ)
@@ -80,26 +80,26 @@ coalg-MaxQuot-CoalgHom = [_] , funExt (λ _ → refl)
 
 -- =====================================================
 
-{- S-EXTENSIONALITY -}
+{- PRECONGRUENCE SIMPLE -}
 
--- A coalgebra is *s-extensional* if,
--- whenever two states are related by a *reflexive* precongruence,
+-- A coalgebra is ℓʳ-precongruence simple if,
+-- whenever two states are related by a *reflexive* ℓʳ-precongruence,
 -- then they are equal.
-sExt : ∀ ℓʳ → Type (ℓ-max (ℓ-max ℓs ℓ) (ℓ-suc ℓʳ))
-sExt ℓʳ = (x y : A) (S : Precong ℓʳ) → isReflRel (S .fst) → S .fst x y → x ≡ y
+is[_]PrecongSimple : ∀ ℓʳ → Type (ℓ-max (ℓ-max υ ℓ) (ℓ-suc ℓʳ))
+is[ ℓʳ ]PrecongSimple = (x y : A) (S : Precong ℓʳ) → isReflRel (S .fst) → S .fst x y → x ≡ y
 
 isSExt-1 : isSet A → (x y : A) → x ≡ y → Σ[ S ∈ Precong ℓ ] isReflRel (S .fst) × S .fst x y
 isSExt-1 setA x y eq = (Path A , setA , λ x' y' eq' i → map [_] (coalg C (eq' i))) , (λ _ → refl) , eq 
 
--- This notion differs from Aczel and Mendler's one, since they
--- moreover ask the precongruence to be transitive and symmetric,
--- i.e. a congruence.
--- But reflexivity is sufficient.
+-- This notion differs from Aczel and Mendler's one (called
+-- s-extensionality), since they moreover ask the precongruence to be
+-- transitive and symmetric, i.e. a congruence.  But reflexivity is
+-- sufficient.
 
-sExt→strExt' : ∀{ℓ'} → sExt (ℓ-max ℓ ℓ')
+isPrecongSimple→isSimple' : ∀{ℓ'} → is[ ℓ-max ℓ ℓ' ]PrecongSimple
   → (C' : Coalg ℓ') (h k : CoalgHom C' C)
   → ∀ z → fst h z ≡ fst k z
-sExt→strExt' {ℓ'} sext C'@(A' , a') (f , fhom) (f' , fhom') z = sext _ _ S r s
+isPrecongSimple→isSimple' {ℓ'} sext C'@(A' , a') (f , fhom) (f' , fhom') z = sext _ _ S r s
   where
     R' : A → A → Type (ℓ-max ℓ ℓ')
     R' x x' = Σ[ y ∈ A' ] (x ≡ f y) × (x' ≡ f' y)
@@ -141,7 +141,7 @@ sExt→strExt' {ℓ'} sext C'@(A' , a') (f , fhom) (f' , fhom') z = sext _ _ S r
     s : R (f z) (f' z)
     s = ∣ inl (z , refl , refl) ∣₁
 
-sExt→strExt : isSet A → ∀{ℓ'} → sExt (ℓ-max ℓ ℓ') → strExt ℓ' C
-sExt→strExt setA sext C' h k =
+isPrecongSimple→isSimple : isSet A → ∀{ℓ'} → is[ ℓ-max ℓ ℓ' ]PrecongSimple → is[ ℓ' ]Simple C
+isPrecongSimple→isSimple setA sext C' h k =
   Σ≡Prop (λ _ → isSetΠ (λ _ → isSetF setA) _ _)
-         (funExt (sExt→strExt' sext C' h k))
+         (funExt (isPrecongSimple→isSimple' sext C' h k))
