@@ -185,3 +185,13 @@ module SubCoalg {ℓ' υ ℓ}
           f' = f
 -}          
 
+-- The small coalgebra and the coalgebra morphism, packeged together
+smallCoalg : ∀ {ℓ' υ ℓ} (Fun : Functor ℓ')
+  → (SB : isBased υ ℓ Fun)
+  → let open Coalgebras Fun in
+     (α : Coalg ℓ)
+  → (z : P∞ υ ⟨ α ⟩)
+  → Σ (Coalg υ) (λ α∞ → CoalgHom α∞ α)
+smallCoalg Fun SB α z = C^ z , C^Hom z
+  where
+    open SubCoalg Fun SB α
