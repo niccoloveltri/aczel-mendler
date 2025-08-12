@@ -134,8 +134,8 @@ module SubCoalg {ℓ' υ ℓ}
   C^lift : (Y : P∞ υ ⟨ C ⟩) (Z : P∞ υ ⟨ C^ Y ⟩) → 
     let Z' = mapP∞ (C^Hom Y .fst) Z in
       Σ[ h ∈ CoalgHom (C^ Z') (C^ Y) ]
-         ∀ z → ι (Σnext (mapP∞ (C^Hom Y .fst) Z)) z ≡ ι (Σnext Y) (h .fst z)
-  C^lift Y Z = (h , coalgHom-h) , hι
+        ((z : ⟨ Z ⟩) → h .fst (up Z' z) ≡ ι Z z)
+  C^lift Y Z = (h , coalgHom-h) , λ _ → refl
     where
       Z' = mapP∞ (C^Hom Y .fst) Z
 
