@@ -43,7 +43,7 @@ isPrecongSimple-MaxQuot' {ℓʳ} x y S@(R , q , p) r s = ∣ S' , s ∣₁
     S' : Precong _ C ℓʳ
     S' = R' , (λ _ _ → q _ _) , Rp'
 
-isPrecongSimple-MaxQuot : ∀ ℓʳ → is[_]PrecongSimple _ (MaxQuot-Coalg _ C ℓʳ) ℓʳ
+isPrecongSimple-MaxQuot : ∀ ℓʳ → is[ _ ]PrecongSimple (MaxQuot-Coalg _ C ℓʳ) ℓʳ
 isPrecongSimple-MaxQuot ℓʳ =
   elimProp2
     (λ _ _ → isPropΠ3 (λ _ _ _ → squash/ _ _))

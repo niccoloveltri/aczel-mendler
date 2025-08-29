@@ -145,3 +145,63 @@ isPrecongSimple→isSimple : isSet A → ∀{ℓ'} → is[ ℓ-max ℓ ℓ' ]Pre
 isPrecongSimple→isSimple setA sext C' h k =
   Σ≡Prop (λ _ → isSetΠ (λ _ → isSetF setA) _ _)
          (funExt (isPrecongSimple→isSimple' sext C' h k))
+
+
+isPrecongSimple×LocallySmall→isSimple' : ∀{ℓ'}
+  → isLocally[ ℓ' ]Small A
+  → is[ ℓ' ]PrecongSimple
+  → (C' : Coalg ℓ') (h k : CoalgHom C' C)
+  → ∀ z → fst h z ≡ fst k z
+isPrecongSimple×LocallySmall→isSimple' {ℓ'} loc-small precong-simp C'@(A' , a') (f , fhom) (f' , fhom') z =
+  precong-simp _ _ S r s
+  where
+    _≡ₛ_ : A → A → Type ℓ'
+    x ≡ₛ x' = loc-small x x' .fst
+
+    R' : A → A → Type ℓ'
+    R' x x' = Σ[ y ∈ A' ] (x ≡ₛ f y) × (x' ≡ₛ f' y)
+
+    R : A → A → Type ℓ'
+    R x x' = ∥ R' x x' ⊎ (x ≡ₛ x') ∥₁
+
+    Rp'' : ∀ x₁ x₂ → x₁ ≡ₛ x₂ → FRel R x₁ x₂
+    Rp'' x₁ x₂ eq i = map [_] (coalg C (invEq (loc-small x₁ x₂ .snd) eq i))
+
+    Rp' : ∀ x₁ x₂ → R' x₁ x₂ → FRel R x₁ x₂
+    Rp' x₁ x₂ (y , eq₁ , eq₂) = 
+      map [_] (coalg C x₁)
+      ≡⟨ cong (map [_] ∘ coalg C) (invEq (loc-small x₁ (f y) .snd) eq₁) ⟩
+      map [_] (coalg C (f y))
+      ≡⟨ (λ i → map [_] (fhom (~ i) y)) ⟩
+      map [_] (map f (a' y))
+      ≡⟨ sym (map∘ _) ⟩
+      map ([_] ∘ f) (a' y)
+      ≡⟨ cong (λ h → map h (a' y))
+             (funExt (λ y → eq/ _ _ ∣ inl (_ , equivFun (loc-small (f y) (f y) .snd) refl  , equivFun (loc-small (f' y) (f' y) .snd) refl) ∣₁)) ⟩
+      map ([_] ∘ f') (a' y)
+      ≡⟨ map∘ _ ⟩
+      map [_] (map f' (a' y))
+      ≡⟨ (λ i → map [_] (fhom' i y)) ⟩
+      map [_] (coalg C (f' y))
+      ≡⟨ (λ i → map [_] (coalg C (invEq (loc-small x₂ (f' y) .snd) eq₂ (~ i)))) ⟩
+      map [_] (coalg C x₂)
+      ∎
+
+    Rp : isPrecong R
+    Rp x₁ x₂ = recP (isSetF squash/ _ _) (rec⊎ (Rp' x₁ x₂) (Rp'' x₁ x₂))
+
+    S : Precong ℓ'
+    S = R , (λ _ _ → isPropPropTrunc) , Rp
+
+    r : isReflRel R
+    r x = ∣ inr (equivFun (loc-small x x .snd) refl) ∣₁
+
+    s : R (f z) (f' z)
+    s = ∣ inl (z , equivFun (loc-small _ _ .snd) refl , equivFun (loc-small _ _ .snd) refl) ∣₁
+
+isPrecongSimple×LocallySmall→isSimple : isSet A
+  → ∀{ℓ'} → isLocally[ ℓ' ]Small A → is[ ℓ' ]PrecongSimple
+  → is[ ℓ' ]Simple C
+isPrecongSimple×LocallySmall→isSimple setA loc-small precong-simp C' h k =
+  Σ≡Prop (λ _ → isSetΠ (λ _ → isSetF setA) _ _)
+         (funExt (isPrecongSimple×LocallySmall→isSimple' loc-small precong-simp C' h k))

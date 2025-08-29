@@ -32,4 +32,3 @@ wνF-Coalg = wνF , coalg-wνF
 
 unfold-CoalgHom : (C : Coalg ℓ) → CoalgHom C wνF-Coalg _
 unfold-CoalgHom C = unfold C , unfold-eq C
-

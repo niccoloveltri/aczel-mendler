@@ -64,10 +64,9 @@ module IterQuot {ℓ ℓʳ ℓˢ : Level}
   Iso.rightInv collapse/-iso = elimProp (λ _ → squash/ _ _) (λ _ → refl)
   Iso.leftInv collapse/-iso = elimProp (λ _ → squash/ _ _) (elimProp (λ _ → squash/ _ _) (λ _ → refl))
 
-
 -- Propositional resizing (Def. 2.4 of de Jong & Escardó "On small types in univalent foundations")
-PropRes : (Υ ℓL : Level) → Type (ℓ-max (ℓ-suc Υ) (ℓ-suc ℓL))
-PropRes Υ ℓL = (P : Type ℓL) → isProp P → Σ[ Q ∈ Type Υ ] P ≃ Q
+PropRes : (ℓS ℓL : Level) → Type (ℓ-max (ℓ-suc ℓS) (ℓ-suc ℓL))
+PropRes ℓS ℓL = (P : Type ℓL) → isProp P → Σ[ Q ∈ Type ℓS ] P ≃ Q
 
 -- Here υ is the level of the universe of small types called  U in the paper
 
@@ -104,3 +103,6 @@ module _ {υ} (Fun : Functor υ) where
                → map f x ≡ map f' x')
       (λ {f'} eqf → cong₂ map (funExt eqf ∙ funExt (λ z → cong f' (transportRefl z))))
 
+-- Locally small types
+isLocally[_]Small : ∀ {ℓL} (ℓS : Level) (X : Type ℓL) → Type (ℓ-max ℓL (ℓ-suc ℓS))
+isLocally[ ℓS ]Small X = (x x' : X) → Σ[ Y ∈ Type ℓS ]  (x ≡ x') ≃ Y

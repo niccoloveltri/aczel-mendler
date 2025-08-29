@@ -104,3 +104,6 @@ module _ {ℓs} (Fun : Functor ℓs) where
                → map _ f x ≡ map _ f' x')
       (λ {f'} eqf → cong₂ (map _) (funExt eqf ∙ funExt (λ z → cong f' (transportRefl z))))
 
+-- Locally small types
+isLocally[_]Small : ∀ {ℓL} (ℓS : Level) (X : Type ℓL) → Type (ℓ-max ℓL (ℓ-suc ℓS))
+isLocally[ ℓS ]Small X = (x x' : X) → Σ[ Y ∈ Type ℓS ]  (x ≡ x') ≃ Y

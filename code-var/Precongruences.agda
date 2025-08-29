@@ -96,52 +96,62 @@ isSExt-1 setA x y eq = (Path A , setA , λ x' y' eq' i → map squash/ [_] (coal
 -- transitive and symmetric, i.e. a congruence.  But reflexivity is
 -- sufficient.
 
-isPrecongSimple→isSimple' : ∀{ℓ'} → is[ ℓ-max ℓ ℓ' ]PrecongSimple
+isPrecongSimple×LocallySmall→isSimple' : ∀{ℓ'}
+  → isLocally[ ℓ' ]Small A
+  → is[ ℓ' ]PrecongSimple
   → (C' : Coalg ℓ') (h k : CoalgHom C' C setC)
   → ∀ z → fst h z ≡ fst k z
-isPrecongSimple→isSimple' {ℓ'} sext C'@(A' , a') (f , fhom) (f' , fhom') z = sext _ _ S r s
+isPrecongSimple×LocallySmall→isSimple' {ℓ'} loc-small precong-simp C'@(A' , a') (f , fhom) (f' , fhom') z =
+  precong-simp _ _ S r s
   where
-    R' : A → A → Type (ℓ-max ℓ ℓ')
-    R' x x' = Σ[ y ∈ A' ] (x ≡ f y) × (x' ≡ f' y)
+    _≡ₛ_ : A → A → Type ℓ'
+    x ≡ₛ x' = loc-small x x' .fst
 
-    R : A → A → Type (ℓ-max ℓ ℓ')
-    R x x' = ∥ R' x x' ⊎ (x ≡ x') ∥₁
+    R' : A → A → Type ℓ'
+    R' x x' = Σ[ y ∈ A' ] (x ≡ₛ f y) × (x' ≡ₛ f' y)
 
-    Rp'' : ∀ x₁ x₂ → x₁ ≡ x₂ → FRel R x₁ x₂
-    Rp'' x₁ x₂ eq i = map squash/ [_] (coalg C (eq i))
+    R : A → A → Type ℓ'
+    R x x' = ∥ R' x x' ⊎ (x ≡ₛ x') ∥₁
+
+    Rp'' : ∀ x₁ x₂ → x₁ ≡ₛ x₂ → FRel R x₁ x₂
+    Rp'' x₁ x₂ eq i = map squash/ [_] (coalg C (invEq (loc-small x₁ x₂ .snd) eq i))
 
     Rp' : ∀ x₁ x₂ → R' x₁ x₂ → FRel R x₁ x₂
     Rp' x₁ x₂ (y , eq₁ , eq₂) = 
       map _ [_] (coalg C x₁)
-      ≡⟨ cong (map _ [_] ∘ coalg C) eq₁ ⟩
+      ≡⟨ cong (map squash/ [_] ∘ coalg C) (invEq (loc-small x₁ (f y) .snd) eq₁) ⟩
       map _ [_] (coalg C (f y))
       ≡⟨ (λ i → map squash/ [_] (fhom (~ i) y)) ⟩
       map _ [_] (map _ f (a' y))
       ≡⟨ sym (map∘ _) ⟩
       map _ ([_] ∘ f) (a' y)
-      ≡⟨ cong (λ h → map squash/ h (a' y)) (funExt (λ y → eq/ _ _ ∣ inl (_ , refl , refl) ∣₁)) ⟩
+      ≡⟨ cong (λ h → map squash/ h (a' y))
+             (funExt (λ y → eq/ _ _ ∣ inl (_ , equivFun (loc-small (f y) (f y) .snd) refl  , equivFun (loc-small (f' y) (f' y) .snd) refl) ∣₁)) ⟩
       map _ ([_] ∘ f') (a' y)
       ≡⟨ map∘ _ ⟩
       map _ [_] (map _ f' (a' y))
       ≡⟨ (λ i → map squash/ [_] (fhom' i y)) ⟩
       map _ [_] (coalg C (f' y))
-      ≡⟨ (λ i → map squash/ [_] (coalg C (eq₂ (~ i)))) ⟩
+      ≡⟨ (λ i → map squash/ [_] (coalg C (invEq (loc-small x₂ (f' y) .snd) eq₂ (~ i)))) ⟩
       map _ [_] (coalg C x₂)
       ∎
 
     Rp : isPrecong R
     Rp x₁ x₂ = recP (isSetF _ _) (rec⊎ (Rp' x₁ x₂) (Rp'' x₁ x₂))
 
-    S : Precong (ℓ-max ℓ ℓ')
+    S : Precong ℓ'
     S = R , (λ _ _ → isPropPropTrunc) , Rp
 
     r : isReflRel R
-    r x = ∣ inr refl ∣₁
+    r x = ∣ inr (equivFun (loc-small x x .snd) refl) ∣₁
 
     s : R (f z) (f' z)
-    s = ∣ inl (z , refl , refl) ∣₁
+    s = ∣ inl (z , equivFun (loc-small _ _ .snd) refl , equivFun (loc-small _ _ .snd) refl) ∣₁
 
-isPrecongSimple→isSimple : isSet A → ∀{ℓ'} → is[ ℓ-max ℓ ℓ' ]PrecongSimple → is[ ℓ' ]Simple C setC
-isPrecongSimple→isSimple setA sext C' h k =
+isPrecongSimple×LocallySmall→isSimple : isSet A
+  → ∀{ℓ'} → isLocally[ ℓ' ]Small A → is[ ℓ' ]PrecongSimple
+  → is[ ℓ' ]Simple C setC
+isPrecongSimple×LocallySmall→isSimple setA loc-small precong-simp C' h k =
   Σ≡Prop (λ _ → isSetΠ (λ _ → isSetF) _ _)
-         (funExt (isPrecongSimple→isSimple' sext C' h k))
+         (funExt (isPrecongSimple×LocallySmall→isSimple' loc-small precong-simp C' h k))
+
