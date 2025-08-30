@@ -1,5 +1,5 @@
 {
-  description = "Agda 2.6.2 + Cubical from nixpkgs, registered for use";
+  description = "Agda 2.6.2 + Cubical from nixpkgs (registered via withPackages)";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.05";
@@ -11,27 +11,29 @@
     let
       pkgs = import nixpkgs { inherit system; };
 
-      # Agda and its libraries come matched in pkgs.agdaPackages.*
-      agda = pkgs.agda;                          # 2.6.2 on nixos-22.05
-      cubical = pkgs.agdaPackages.cubical;       # Cubical library from nixpkgs
+      # Wrap Agda so the Cubical lib is *registered* in the wrapper's library file.
+      agda = pkgs.agda.withPackages (p: [ p.cubical ]);
+
+      # For convenience, expose cubical too
+      cubical = pkgs.agdaPackages.cubical;
     in
     {
       devShells.default = pkgs.mkShell {
         buildInputs = [ agda ];
 
-        AGDA_DIR = ".agda";
-
+        # Make Cubical the default library for ad-hoc files (no flags needed).
         shellHook = ''
+          export AGDA_DIR="$PWD/.agda"
           mkdir -p "$AGDA_DIR"
 
-          # Point Agda to the Cubical library shipped by nixpkgs
-          echo "${cubical}/cubical.agda-lib" > "$AGDA_DIR/libraries"
-
-          # Make Cubical the default library so imports work without extra flags
+          # Only set defaults; libraries are handled by the agda wrapper.
           echo "cubical" > "$AGDA_DIR/defaults"
 
+          # Belt & suspenders: point Agda directly at the defaults file.
+          export AGDA_DEFAULTS="$AGDA_DIR/defaults"
+
           echo "Agda $(agda --version | head -n1) ready."
-          echo "Cubical library registered from: ${cubical}/cubical.agda-lib"
+          echo "Defaults -> $(cat "$AGDA_DIR/defaults")"
         '';
       };
 
