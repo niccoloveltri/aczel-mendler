@@ -11,7 +11,7 @@
     let
       pkgs = import nixpkgs { inherit system; };
 
-      # Override nixpkgs' cubical to the commit you know type-checks your code.
+      # Override nixpkgs' cubical to the commit we know type-checks our code.
       cubicalPinned = pkgs.agdaPackages.cubical.overrideAttrs (_: {
         version = "git-dbe0176";
         src = pkgs.fetchFromGitHub {
@@ -22,7 +22,7 @@
         };
       });
 
-      # Wrap Agda so this cubical is REGISTERED (no messing with ~/.agda/libraries).
+      # Wrap Agda so this cubical is registered (no messing with ~/.agda/libraries).
       agdaWith = pkgs.agda.withPackages (p: [
         cubicalPinned
       ]);
