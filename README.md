@@ -10,3 +10,24 @@ The formalization type-checks with Agda 2.6.2 and the following version of the C
 
 In the paper, all constructions are presented using a single universe U : Type.
 In the Agda code, they are universe-polymorphic.
+
+## Compiling with Nix
+
+This repo has been packaged as a Nix flake. Thus, if you have Nix installed (and
+have allowed experimental features) you can compile the Agda code in the repo by
+first running:
+
+```bash
+$ nix develop
+```
+
+This will create a shell that contains the Agda and cubical versions needed to
+compile the code. (Note: this command may take a while to execute the first time
+as it needs to build the cubical library. But subsequent runs should be much
+faster as Nix will reuse the build files.)
+
+You can then type check the Agda code as usual inside this new shell:
+
+```bash
+$ agda <agda-file-to-type-check>
+```

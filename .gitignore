@@ -12,5 +12,7 @@
 *.jpg
 *.toc
 *.agda~
-
+.agda/
+code/html/
+code-var/html/
 
