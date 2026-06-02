@@ -1,8 +1,13 @@
-{-# OPTIONS --cubical #-}
+{-# OPTIONS --cubical --guardedness #-}
 
 module Utilities where
 
-open import Cubical.Foundations.Everything public
+open import Cubical.Foundations.Equiv public
+open import Cubical.Foundations.Function public
+open import Cubical.Foundations.HLevels public
+open import Cubical.Foundations.Isomorphism public
+open import Cubical.Foundations.Prelude public
+open import Cubical.Foundations.Univalence public
 open import Cubical.HITs.SetQuotients public
 open import Cubical.Data.Nat hiding (elim) public
 open import Cubical.Data.Sigma public
@@ -14,6 +19,8 @@ open BinaryRelation public
 -- ==============================================
 
 {- PRELIMINARIES -}
+
+⟨_⟩ = fst
 
 -- Prop-valued relations 
 isPropRel : ∀{ℓ ℓ' ℓ''} {A : Type ℓ} {B : Type ℓ'} (R : A → B → Type ℓ'') → Type (ℓ-max (ℓ-max ℓ ℓ') ℓ'')

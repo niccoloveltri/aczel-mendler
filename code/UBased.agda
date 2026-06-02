@@ -1,5 +1,4 @@
-{-# OPTIONS --cubical #-}
-
+{-# OPTIONS --cubical --guardedness #-}
 
 module UBased where
 

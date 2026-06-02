@@ -1,5 +1,4 @@
-{-# OPTIONS --cubical #-}
-
+{-# OPTIONS --cubical --guardedness #-}
 
 module Multiset where
 
